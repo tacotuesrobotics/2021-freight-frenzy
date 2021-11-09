@@ -44,16 +44,12 @@ public class BasicTankDrive extends OpMode
     private DcMotor leftRearDrive = null;
     private DcMotor rightRearDrive = null;
     private ElapsedTime lastTickTime = new ElapsedTime();
-    double lastRightSpeed = 0;
-    double lastLeftSpeed = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
-        telemetry.addData("Status", "Initializing");
-
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left-front");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right-front");
         leftRearDrive = hardwareMap.get(DcMotor.class, "left-rear");
@@ -63,8 +59,6 @@ public class BasicTankDrive extends OpMode
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
         rightRearDrive.setDirection(DcMotor.Direction.FORWARD);
-
-        telemetry.addData("Status", "Initialized");
     }
 
     /*
@@ -87,21 +81,6 @@ public class BasicTankDrive extends OpMode
      */
     @Override
     public void loop() {
-        double leftStick;
-        double rightStick;
-
-        leftStick  = limitAcceleration(gamepad1.left_stick_y, lastLeftSpeed);
-        rightStick = limitAcceleration(gamepad1.right_stick_y, lastRightSpeed);
-
-        rightPower(rightStick);
-        leftPower(leftStick);
-
-        lastRightSpeed = rightStick;
-        lastLeftSpeed = leftStick;
-
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftStick, rightStick);
-        lastTickTime.reset();
     }
 
     /*
@@ -109,22 +88,5 @@ public class BasicTankDrive extends OpMode
      */
     @Override
     public void stop() {
-    }
-
-    private void rightPower(double power) {
-        rightFrontDrive.setPower(power);
-        rightRearDrive.setPower(power);
-    }
-
-    private void leftPower(double power) {
-        leftFrontDrive.setPower(power);
-        leftRearDrive.setPower(power);
-    }
-
-    private double limitAcceleration(double targetPower, double lastPower) {
-        final double maxPowerAdjustmentPerSec = 0.5;
-        double maxPowerAdjustment = maxPowerAdjustmentPerSec * lastTickTime.seconds();
-        double requestedAdjustment = targetPower - lastPower;
-        return Math.min(maxPowerAdjustment, requestedAdjustment);
     }
 }
